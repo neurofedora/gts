@@ -1,0 +1,33 @@
+--- gts-0.7.6.ORIG/src/gts-config.in	2006-05-18 20:42:33.000000000 -0400
++++ gts-0.7.6/src/gts-config.in	2006-05-21 15:56:45.000000000 -0400
+@@ -107,28 +107,8 @@
+ 	echo $exec_prefix
+ fi
+ if test "$echo_cflags" = "yes"; then
+-	if test "$lib_gmodule" = "yes"; then
+-	    glib_cflags="$glib_cflags $glib_module_cflags"
+-	fi
+-	if test "$lib_gthread" = "yes"; then
+-	    glib_cflags="$glib_cflags $glib_thread_cflags"
+-	fi
+-	glib_cflags="$glib_cflags -I${prefix}/include"
+-	glib_cflags=`uniquify "$glib_cflags"`
+-        if test "$echo_check" = "yes"; then
+-	    echo -DGTS_CHECK_CASTS $glib_cflags
+-        else
+-	    echo $glib_cflags
+-	fi
++	pkg-config --cflags gts
+ fi
+ if test "$echo_libs" = "yes"; then
+-	if test "$lib_gmodule" = "yes"; then
+-	    glib_libs="$glib_libs $glib_module_libs"
+-	fi
+-	if test "$lib_gthread" = "yes"; then
+-	    glib_libs="$glib_libs $glib_thread_libs"
+-	fi
+-	glib_libs="-L${exec_prefix}/lib -lgts $glib_libs -lm"
+-	glib_libs=`uniquify "$glib_libs"`
+-	echo $glib_libs
++	pkg-config --libs gts
+ fi

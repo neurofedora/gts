@@ -1,6 +1,6 @@
 Name:           gts
 Version:        0.7.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
 License:        LGPL
@@ -11,6 +11,7 @@ Patch0:         gts-0.7.6-includedir.diff
 Patch1:         gts-0.7.6-gts_config.diff
 
 BuildRequires:  glib2-devel
+BuildRequires:  netpbm-devel
 
 %package devel
 Summary:        Development files for gts
@@ -33,7 +34,7 @@ This package contains the gts header files and libs.
 %patch1 -p1
 
 %build
-%configure --disable-static
+%configure --disable-static --disable-dependency-tracking
 make %{?_smp_mflags}
 
 %install
@@ -76,6 +77,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/aclocal/*
 
 %changelog
+* Mon May 22 2006 Ralf Corsépius <rc040203@freenet.de> - 0.7.6-5
+- BR: netpbm-devel (Required to build happrox).
+- Add --disable-dependency-tracking.
+
 * Sun May 21 2006 Ed Hill <ed@eh3.com> - 0.7.6-4
 - add gts-config patch
 

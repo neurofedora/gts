@@ -1,6 +1,6 @@
 Name:           gts
 Version:        0.7.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
 License:        LGPL
@@ -77,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/aclocal/*
 
 %changelog
+* Fri Sep  1 2006 Ed Hill <ed@eh3.com> - 0.7.6-6
+- rebuild for imminent FC-6 release
+
 * Mon May 22 2006 Ralf Corsépius <rc040203@freenet.de> - 0.7.6-5
 - BR: netpbm-devel (Required to build happrox).
 - Add --disable-dependency-tracking.

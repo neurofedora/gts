@@ -1,6 +1,6 @@
 Name:           gts
 Version:        0.7.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
 License:        LGPL
@@ -77,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/aclocal/*
 
 %changelog
+* Tue Aug 28 2007 Ed Hill <ed@eh3.com> - 0.7.6-7
+- rebuild for BuildID
+
 * Fri Sep  1 2006 Ed Hill <ed@eh3.com> - 0.7.6-6
 - rebuild for imminent FC-6 release
 

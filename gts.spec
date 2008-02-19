@@ -1,6 +1,6 @@
 Name:           gts
 Version:        0.7.6
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
 License:        LGPL
@@ -77,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/aclocal/*
 
 %changelog
+* Mon Feb 18 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 0.7.6-9
+- Autorebuild for GCC 4.3
+
 * Sun Oct 21 2007 Ralf Corsépius <rc040203@freenet.de> - 0.7.6-8
 - Address BZ 341431:
   - Rework gts-config.

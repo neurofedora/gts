@@ -1,9 +1,9 @@
 Name:           gts
 Version:        0.7.6
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
-License:        LGPL
+License:        LGPLv2+
 URL:            http://gts.sourceforge.net/index.html
 Source0:        http://prdownloads.sourceforge.net/gts/gts-0.7.6.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -77,6 +77,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/aclocal/*
 
 %changelog
+* Fri May 23 2008 Jon Stanley <jonstanley@gmail.com> - 0.7.6-10
+- Fix license tag
+
 * Mon Feb 18 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 0.7.6-9
 - Autorebuild for GCC 4.3
 

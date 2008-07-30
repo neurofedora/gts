@@ -1,14 +1,15 @@
 Name:           gts
 Version:        0.7.6
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
 License:        LGPLv2+
 URL:            http://gts.sourceforge.net/index.html
 Source0:        http://prdownloads.sourceforge.net/gts/gts-0.7.6.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Patch0:         gts-0.7.6-includedir.diff
-Patch1:         gts-0.7.6-gts_config.diff
+Patch0:         gts-0.7.6-hacks.diff
+
+Patch10:	gts-0.7.6-autotools.diff.bz2
 
 BuildRequires:  glib2-devel
 BuildRequires:  netpbm-devel
@@ -17,6 +18,7 @@ BuildRequires:  netpbm-devel
 Summary:        Development files for gts
 Group:          Applications/Engineering
 Requires:       pkgconfig
+Requires:       glib2-devel
 Requires:       %{name} = %{version}-%{release}
 
 %description
@@ -31,10 +33,14 @@ This package contains the gts header files and libs.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
+
+%patch10 -p1
+
+# Fix broken permissions
+chmod +x test/*/*.sh
 
 %build
-%configure --disable-static --disable-dependency-tracking
+%configure --disable-static --disable-dependency-tracking LIBS=-lm
 make %{?_smp_mflags}
 
 %install
@@ -47,6 +53,10 @@ mv -f $RPM_BUILD_ROOT%{_bindir}/transform $RPM_BUILD_ROOT%{_bindir}/gtstransform
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%check
+# Urgh, something is very broken with gts rsp. its testsuite
+make check ||:
 
 %post -p /sbin/ldconfig
 
@@ -77,6 +87,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/aclocal/*
 
 %changelog
+* Wed Jul 30 2008 Ralf Corsépius <rc040203@freenet.de> - 0.7.6-11
+- Let *-devel Require: glib2-devel (BZ: 457099).
+- Pass LIBS=-lm to %%configure (avoid non-weak refs to libm).
+- Add gts-0.7.6-hacks.diff (Various configuration fixes).
+- Add gts-0.7.6-autotools.diff (regenerate autotool-generated files).
+- Add %%check.
+
 * Fri May 23 2008 Jon Stanley <jonstanley@gmail.com> - 0.7.6-10
 - Fix license tag
 

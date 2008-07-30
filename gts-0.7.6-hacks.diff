@@ -1,0 +1,508 @@
+diff -Naur gts-0.7.6.orig/acinclude.m4 gts-0.7.6-hacks/acinclude.m4
+--- gts-0.7.6.orig/acinclude.m4	2005-01-19 05:47:06.000000000 +0100
++++ gts-0.7.6-hacks/acinclude.m4	1970-01-01 01:00:00.000000000 +0100
+@@ -1,197 +0,0 @@
+-# Configure paths for GLIB
+-# Owen Taylor     97-11-3
+-
+-dnl AM_PATH_GLIB([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND [, MODULES]]]])
+-dnl Test for GLIB, and define GLIB_CFLAGS and GLIB_LIBS, if "gmodule" or 
+-dnl gthread is specified in MODULES, pass to glib-config
+-dnl
+-AC_DEFUN(AM_PATH_GLIB,
+-[dnl 
+-dnl Get the cflags and libraries from the glib-config script
+-dnl
+-AC_ARG_WITH(glib-prefix,[  --with-glib-prefix=PFX   Prefix where GLIB is installed (optional)],
+-            glib_config_prefix="$withval", glib_config_prefix="")
+-AC_ARG_WITH(glib-exec-prefix,[  --with-glib-exec-prefix=PFX Exec prefix where GLIB is installed (optional)],
+-            glib_config_exec_prefix="$withval", glib_config_exec_prefix="")
+-AC_ARG_ENABLE(glibtest, [  --disable-glibtest       Do not try to compile and run a test GLIB program],
+-		    , enable_glibtest=yes)
+-
+-  if test x$glib_config_exec_prefix != x ; then
+-     glib_config_args="$glib_config_args --exec-prefix=$glib_config_exec_prefix"
+-     if test x${GLIB_CONFIG+set} != xset ; then
+-        GLIB_CONFIG=$glib_config_exec_prefix/bin/glib-config
+-     fi
+-  fi
+-  if test x$glib_config_prefix != x ; then
+-     glib_config_args="$glib_config_args --prefix=$glib_config_prefix"
+-     if test x${GLIB_CONFIG+set} != xset ; then
+-        GLIB_CONFIG=$glib_config_prefix/bin/glib-config
+-     fi
+-  fi
+-
+-  for module in . $4
+-  do
+-      case "$module" in
+-         gmodule) 
+-             glib_config_args="$glib_config_args gmodule"
+-         ;;
+-         gthread) 
+-             glib_config_args="$glib_config_args gthread"
+-         ;;
+-      esac
+-  done
+-
+-  AC_PATH_PROG(GLIB_CONFIG, glib-config, no)
+-  min_glib_version=ifelse([$1], ,0.99.7,$1)
+-  AC_MSG_CHECKING(for GLIB - version >= $min_glib_version)
+-  no_glib=""
+-  if test "$GLIB_CONFIG" = "no" ; then
+-    no_glib=yes
+-  else
+-    GLIB_CFLAGS=`$GLIB_CONFIG $glib_config_args --cflags`
+-    GLIB_LIBS=`$GLIB_CONFIG $glib_config_args --libs`
+-    glib_config_major_version=`$GLIB_CONFIG $glib_config_args --version | \
+-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+-    glib_config_minor_version=`$GLIB_CONFIG $glib_config_args --version | \
+-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+-    glib_config_micro_version=`$GLIB_CONFIG $glib_config_args --version | \
+-           sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+-    if test "x$enable_glibtest" = "xyes" ; then
+-      ac_save_CFLAGS="$CFLAGS"
+-      ac_save_LIBS="$LIBS"
+-      CFLAGS="$CFLAGS $GLIB_CFLAGS"
+-      LIBS="$GLIB_LIBS $LIBS"
+-dnl
+-dnl Now check if the installed GLIB is sufficiently new. (Also sanity
+-dnl checks the results of glib-config to some extent
+-dnl
+-      rm -f conf.glibtest
+-      AC_TRY_RUN([
+-#include <glib.h>
+-#include <stdio.h>
+-#include <stdlib.h>
+-
+-int 
+-main ()
+-{
+-  int major, minor, micro;
+-  char *tmp_version;
+-
+-  system ("touch conf.glibtest");
+-
+-  /* HP/UX 9 (%@#!) writes to sscanf strings */
+-  tmp_version = g_strdup("$min_glib_version");
+-  if (sscanf(tmp_version, "%d.%d.%d", &major, &minor, &micro) != 3) {
+-     printf("%s, bad version string\n", "$min_glib_version");
+-     exit(1);
+-   }
+-
+-  if ((glib_major_version != $glib_config_major_version) ||
+-      (glib_minor_version != $glib_config_minor_version) ||
+-      (glib_micro_version != $glib_config_micro_version))
+-    {
+-      printf("\n*** 'glib-config --version' returned %d.%d.%d, but GLIB (%d.%d.%d)\n", 
+-             $glib_config_major_version, $glib_config_minor_version, $glib_config_micro_version,
+-             glib_major_version, glib_minor_version, glib_micro_version);
+-      printf ("*** was found! If glib-config was correct, then it is best\n");
+-      printf ("*** to remove the old version of GLIB. You may also be able to fix the error\n");
+-      printf("*** by modifying your LD_LIBRARY_PATH enviroment variable, or by editing\n");
+-      printf("*** /etc/ld.so.conf. Make sure you have run ldconfig if that is\n");
+-      printf("*** required on your system.\n");
+-      printf("*** If glib-config was wrong, set the environment variable GLIB_CONFIG\n");
+-      printf("*** to point to the correct copy of glib-config, and remove the file config.cache\n");
+-      printf("*** before re-running configure\n");
+-    } 
+-  else if ((glib_major_version != GLIB_MAJOR_VERSION) ||
+-	   (glib_minor_version != GLIB_MINOR_VERSION) ||
+-           (glib_micro_version != GLIB_MICRO_VERSION))
+-    {
+-      printf("*** GLIB header files (version %d.%d.%d) do not match\n",
+-	     GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION, GLIB_MICRO_VERSION);
+-      printf("*** library (version %d.%d.%d)\n",
+-	     glib_major_version, glib_minor_version, glib_micro_version);
+-    }
+-  else
+-    {
+-      if ((glib_major_version > major) ||
+-        ((glib_major_version == major) && (glib_minor_version > minor)) ||
+-        ((glib_major_version == major) && (glib_minor_version == minor) && (glib_micro_version >= micro)))
+-      {
+-        return 0;
+-       }
+-     else
+-      {
+-        printf("\n*** An old version of GLIB (%d.%d.%d) was found.\n",
+-               glib_major_version, glib_minor_version, glib_micro_version);
+-        printf("*** You need a version of GLIB newer than %d.%d.%d. The latest version of\n",
+-	       major, minor, micro);
+-        printf("*** GLIB is always available from ftp://ftp.gtk.org.\n");
+-        printf("***\n");
+-        printf("*** If you have already installed a sufficiently new version, this error\n");
+-        printf("*** probably means that the wrong copy of the glib-config shell script is\n");
+-        printf("*** being found. The easiest way to fix this is to remove the old version\n");
+-        printf("*** of GLIB, but you can also set the GLIB_CONFIG environment to point to the\n");
+-        printf("*** correct copy of glib-config. (In this case, you will have to\n");
+-        printf("*** modify your LD_LIBRARY_PATH enviroment variable, or edit /etc/ld.so.conf\n");
+-        printf("*** so that the correct libraries are found at run-time))\n");
+-      }
+-    }
+-  return 1;
+-}
+-],, no_glib=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
+-       CFLAGS="$ac_save_CFLAGS"
+-       LIBS="$ac_save_LIBS"
+-     fi
+-  fi
+-  if test "x$no_glib" = x ; then
+-     AC_MSG_RESULT(yes)
+-     ifelse([$2], , :, [$2])     
+-  else
+-     AC_MSG_RESULT(no)
+-     if test "$GLIB_CONFIG" = "no" ; then
+-       echo "*** The glib-config script installed by GLIB could not be found"
+-       echo "*** If GLIB was installed in PREFIX, make sure PREFIX/bin is in"
+-       echo "*** your path, or set the GLIB_CONFIG environment variable to the"
+-       echo "*** full path to glib-config."
+-     else
+-       if test -f conf.glibtest ; then
+-        :
+-       else
+-          echo "*** Could not run GLIB test program, checking why..."
+-          CFLAGS="$CFLAGS $GLIB_CFLAGS"
+-          LIBS="$LIBS $GLIB_LIBS"
+-          AC_TRY_LINK([
+-#include <glib.h>
+-#include <stdio.h>
+-],      [ return ((glib_major_version) || (glib_minor_version) || (glib_micro_version)); ],
+-        [ echo "*** The test program compiled, but did not run. This usually means"
+-          echo "*** that the run-time linker is not finding GLIB or finding the wrong"
+-          echo "*** version of GLIB. If it is not finding GLIB, you'll need to set your"
+-          echo "*** LD_LIBRARY_PATH environment variable, or edit /etc/ld.so.conf to point"
+-          echo "*** to the installed location  Also, make sure you have run ldconfig if that"
+-          echo "*** is required on your system"
+-	  echo "***"
+-          echo "*** If you have an old version installed, it is best to remove it, although"
+-          echo "*** you may also be able to get things to work by modifying LD_LIBRARY_PATH"
+-          echo "***"
+-          echo "*** If you have a RedHat 5.0 system, you should remove the GTK package that"
+-          echo "*** came with the system with the command"
+-          echo "***"
+-          echo "***    rpm --erase --nodeps gtk gtk-devel" ],
+-        [ echo "*** The test program failed to compile or link. See the file config.log for the"
+-          echo "*** exact error that occured. This usually means GLIB was incorrectly installed"
+-          echo "*** or that you have moved GLIB since it was installed. In the latter case, you"
+-          echo "*** may want to edit the glib-config script: $GLIB_CONFIG" ])
+-          CFLAGS="$ac_save_CFLAGS"
+-          LIBS="$ac_save_LIBS"
+-       fi
+-     fi
+-     GLIB_CFLAGS=""
+-     GLIB_LIBS=""
+-     ifelse([$3], , :, [$3])
+-  fi
+-  AC_SUBST(GLIB_CFLAGS)
+-  AC_SUBST(GLIB_LIBS)
+-  rm -f conf.glibtest
+-])
+-
+diff -Naur gts-0.7.6.orig/configure.in gts-0.7.6-hacks/configure.in
+--- gts-0.7.6.orig/configure.in	2006-03-10 00:48:36.000000000 +0100
++++ gts-0.7.6-hacks/configure.in	2008-07-30 08:00:00.000000000 +0200
+@@ -228,14 +228,9 @@
+ ]])
+ 
+ dnl checking for #warning cpp directive
+-AC_TRY_COMPILE(,
+-       "{
+-           #warning test
+-	}", 
+-	AC_DEFINE(CPP_HAS_WARNING, 1, 
+-	[Define if C preprocessor supports warning directive.]),
+-	AC_MSG_WARN(["C preprocessor does not support warning directive."]))
+-
++AC_TRY_CPP([#warning test],
++	[AC_DEFINE(CPP_HAS_WARNING, 1, [Define if C preprocessor supports warning directive.])],
++	[AC_MSG_WARN(["C preprocessor does not support warning directive."])])
+ 
+ dnl header file checks
+ AC_CHECK_HEADERS(fpu_control.h, AC_DEFINE(HAVE_FPU_CONTROL_H))
+diff -Naur gts-0.7.6.orig/examples/Makefile.am gts-0.7.6-hacks/examples/Makefile.am
+--- gts-0.7.6.orig/examples/Makefile.am	2005-03-09 03:18:56.000000000 +0100
++++ gts-0.7.6-hacks/examples/Makefile.am	2008-07-30 07:46:25.000000000 +0200
+@@ -1,9 +1,8 @@
+ ## Process this file with automake to produce Makefile.in
+ 
+-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(includedir)\
++AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src\
+ 	 -DG_LOG_DOMAIN=\"Gts-examples\"
+-LDADD = $(top_builddir)/src/libgts.la -lm
+-DEPS = $(top_builddir)/src/libgts.la
++LDADD = $(top_builddir)/src/libgts.la
+ 
+ EXTRA_PROGRAMS = happrox
+ 
+@@ -36,3 +35,24 @@
+ 	stripe \
+ 	optimize \
+ 	merge
++
++cartesian_SOURCES = cartesian.c
++cleanup_SOURCES = cleanup.c
++coarsen_SOURCES = coarsen.c
++delaunay_SOURCES = delaunay.c
++gtstoc_SOURCES = gtstoc.c
++happrox_SOURCES = happrox.c
++iso_SOURCES = iso.c
++merge_SOURCES = merge.c
++oocs_SOURCES = oocs.c
++optimize_SOURCES = optimize.c
++partition_SOURCES = partition.c
++refine_SOURCES = refine.c
++set_SOURCES = set.c
++smooth_SOURCES = smooth.c
++sphere_SOURCES = sphere.c
++split_SOURCES = split.c
++stripe_SOURCES = stripe.c
++transform_SOURCES = transform.c
++traverse_SOURCES = traverse.c
++volume_SOURCES = volume.c
+diff -Naur gts-0.7.6.orig/gts.pc.in gts-0.7.6-hacks/gts.pc.in
+--- gts-0.7.6.orig/gts.pc.in	2005-01-19 05:48:19.000000000 +0100
++++ gts-0.7.6-hacks/gts.pc.in	2008-07-30 06:34:34.000000000 +0200
+@@ -6,6 +6,6 @@
+ Name: GTS
+ Description: GNU Triangulated Surface Library
+ Version: @VERSION@
+-Requires: glib-2.0,gthread-2.0,gmodule-2.0
+-Libs: -L${libdir} @LIBS@ -lgts
++Requires: glib-2.0
++Libs: -L${libdir} @LIBS@ -lgts -lm
+ Cflags: -I${includedir}
+diff -Naur gts-0.7.6.orig/src/gts-config.in gts-0.7.6-hacks/src/gts-config.in
+--- gts-0.7.6.orig/src/gts-config.in	2005-01-19 05:47:06.000000000 +0100
++++ gts-0.7.6-hacks/src/gts-config.in	2008-07-30 06:34:34.000000000 +0200
+@@ -1,14 +1,5 @@
+ #!/bin/sh
+ 
+-glib_libs="@glib_libs@"
+-glib_cflags="@glib_cflags@"
+-glib_thread_libs="@glib_thread_libs@"
+-glib_thread_cflags="@glib_thread_cflags@"
+-glib_module_libs="@glib_module_libs@"
+-glib_module_cflags="@glib_module_cflags@"
+-
+-prefix=@prefix@
+-exec_prefix=@exec_prefix@
+ exec_prefix_set=no
+ 
+ usage()
+@@ -30,24 +21,13 @@
+ 	exit $1
+ }
+ 
+-uniquify()
+-{
+-    echo $1 | awk '{
+-	for (i = 1; i <= NF; i++) {
+-	    unique = 1;
+-	    for (j = i + 1; j <= NF && unique; j++)
+-		if ($i == $j)
+-		    unique = 0;
+-            if (unique)
+-		printf ("%s ", $i);
+-	}
+-    }'
+-}
+-
+ if test $# -eq 0; then
+ 	usage 1 1>&2
+ fi
+ 
++PKG_CONFIG_ARGS=
++PKG_CONFIG_MODS=gts
++
+ while test $# -gt 0; do
+   case "$1" in
+   -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+@@ -56,23 +36,23 @@
+ 
+   case $1 in
+     --prefix=*)
+-      prefix=$optarg
++      PKG_CONFIG_ARGS="$PKG_CONFIG_ARGS --define-variable=prefix=$optarg"
+       if test $exec_prefix_set = no ; then
+-        exec_prefix=$optarg
++        PKG_CONFIG_ARGS="$PKG_CONFIG_ARGS --define-variable=exec_prefix=$optarg"
+       fi
+       ;;
+     --prefix)
+       echo_prefix=yes
+       ;;
+     --exec-prefix=*)
+-      exec_prefix=$optarg
++      PKG_CONFIG_ARGS="$PKG_CONFIG_ARGS --define-variable=exec_prefix=$optarg"
+       exec_prefix_set=yes
+       ;;
+     --exec-prefix)
+       echo_exec_prefix=yes
+       ;;
+     --version)
+-      echo @GTS_VERSION@
++      pkg-config --modversion gts
+       exit 0
+       ;;
+     --cflags)
+@@ -85,13 +65,12 @@
+       echo_check=yes
+       ;;
+     gts)
+-      lib_gts=yes
+       ;;
+     gmodule)
+-      lib_gmodule=yes
++      PKG_CONFIG_MODS="$PKG_CONFIG_MODS gmodule-2.0"
+       ;;
+     gthread)
+-      lib_gthread=yes
++      PKG_CONFIG_MODS="$PKG_CONFIG_MODS gthread-2.0"
+       ;;
+     *)
+       usage 1 1>&2
+@@ -101,34 +80,18 @@
+ done
+ 
+ if test "$echo_prefix" = "yes"; then
+-	echo $prefix
++	pkg-config $PKG_CONFIG_ARGS --variable=prefix gts
+ fi
+ if test "$echo_exec_prefix" = "yes"; then
+-	echo $exec_prefix
++	pkg-config $PKG_CONFIG_ARGS --variable=exec_prefix gts
+ fi
+ if test "$echo_cflags" = "yes"; then
+-	if test "$lib_gmodule" = "yes"; then
+-	    glib_cflags="$glib_cflags $glib_module_cflags"
+-	fi
+-	if test "$lib_gthread" = "yes"; then
+-	    glib_cflags="$glib_cflags $glib_thread_cflags"
+-	fi
+-	glib_cflags="$glib_cflags -I${prefix}/include"
+-	glib_cflags=`uniquify "$glib_cflags"`
+         if test "$echo_check" = "yes"; then
+-	    echo -DGTS_CHECK_CASTS $glib_cflags
++           echo -DGTS_CHECK_CASTS `pkg-config $PKG_CONFIG_ARGS --cflags $PKG_CONFIG_MODS`
+         else
+-	    echo $glib_cflags
+-	fi
++           echo `pkg-config $PKG_CONFIG_ARGS --cflags $PKG_CONFIG_MODS`
++        fi
+ fi
+ if test "$echo_libs" = "yes"; then
+-	if test "$lib_gmodule" = "yes"; then
+-	    glib_libs="$glib_libs $glib_module_libs"
+-	fi
+-	if test "$lib_gthread" = "yes"; then
+-	    glib_libs="$glib_libs $glib_thread_libs"
+-	fi
+-	glib_libs="-L${exec_prefix}/lib -lgts $glib_libs -lm"
+-	glib_libs=`uniquify "$glib_libs"`
+-	echo $glib_libs
++	echo `pkg-config $PKG_CONFIG_ARGS --libs $PKG_CONFIG_MODS`
+ fi
+diff -Naur gts-0.7.6.orig/src/Makefile.am gts-0.7.6-hacks/src/Makefile.am
+--- gts-0.7.6.orig/src/Makefile.am	2005-01-19 05:48:22.000000000 +0100
++++ gts-0.7.6-hacks/src/Makefile.am	2008-07-30 07:46:25.000000000 +0200
+@@ -1,6 +1,6 @@
+ ## Process this file with automake to produce Makefile.in
+ 
+-INCLUDES = -I$(top_srcdir) -I$(includedir) -DG_LOG_DOMAIN=\"Gts\"
++AM_CPPFLAGS = -I$(top_srcdir) -DG_LOG_DOMAIN=\"Gts\"
+ 
+ bin_SCRIPTS=gts-config
+ 
+diff -Naur gts-0.7.6.orig/test/boolean/Makefile.am gts-0.7.6-hacks/test/boolean/Makefile.am
+--- gts-0.7.6.orig/test/boolean/Makefile.am	2005-01-19 05:47:06.000000000 +0100
++++ gts-0.7.6-hacks/test/boolean/Makefile.am	2008-07-30 07:46:25.000000000 +0200
+@@ -1,12 +1,15 @@
+ ## Process this file with automake to produce Makefile.in
+ 
+-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(includedir)\
++AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src\
+ 	 -DG_LOG_DOMAIN=\"Gts-test\"
+-LDADD = $(top_builddir)/src/libgts.la -lm
+-DEPS = $(top_builddir)/src/libgts.la
++LDADD = $(top_builddir)/src/libgts.la
+ 
+ check_PROGRAMS = set boole cubes
+ 
+ TESTS = test.sh
+ 
+ EXTRA_DIST = $(TESTS) tests surfaces
++
++boole_SOURCES = boole.c
++cubes_SOURCES = cubes.c
++set_SOURCES = set.c
+diff -Naur gts-0.7.6.orig/test/coarsen/Makefile.am gts-0.7.6-hacks/test/coarsen/Makefile.am
+--- gts-0.7.6.orig/test/coarsen/Makefile.am	2005-01-19 05:47:06.000000000 +0100
++++ gts-0.7.6-hacks/test/coarsen/Makefile.am	2008-07-30 07:46:25.000000000 +0200
+@@ -1,12 +1,17 @@
+ ## Process this file with automake to produce Makefile.in
+ 
+-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(includedir)\
++AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src\
+ 	 -DG_LOG_DOMAIN=\"Gts-test\"
+-LDADD = $(top_builddir)/src/libgts.la -lm
+-DEPS = $(top_builddir)/src/libgts.la
++LDADD = $(top_builddir)/src/libgts.la
+ 
+ check_PROGRAMS = cartesian c1 c2 c3 double_prism
+ 
+ TESTS = flat.sh flat1.sh
+ 
+ EXTRA_DIST = flat.sh flat1.sh
++
++c1_SOURCES = c1.c
++c2_SOURCES = c2.c
++c3_SOURCES = c3.c
++cartesian_SOURCES = cartesian.c
++double_prism_SOURCES = double_prism.c
+diff -Naur gts-0.7.6.orig/test/delaunay/Makefile.am gts-0.7.6-hacks/test/delaunay/Makefile.am
+--- gts-0.7.6.orig/test/delaunay/Makefile.am	2005-01-19 05:47:06.000000000 +0100
++++ gts-0.7.6-hacks/test/delaunay/Makefile.am	2008-07-30 07:46:25.000000000 +0200
+@@ -1,9 +1,8 @@
+ ## Process this file with automake to produce Makefile.in
+ 
+-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(includedir) \
++AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src \
+ 	 -DG_LOG_DOMAIN=\"Gts-test\"
+-LDADD = $(top_builddir)/src/libgts.la -lm
+-DEPS = $(top_builddir)/src/libgts.la
++LDADD = $(top_builddir)/src/libgts.la
+ 
+ check_PROGRAMS = cartesian random
+ 
+@@ -15,3 +14,6 @@
+ 	random_speed.sh \
+ 	two_segments.gts two_segments.sh \
+ 	too_close.gts too_close.sh
++
++cartesian_SOURCES = cartesian.c
++random_SOURCES = random.c
+diff -Naur gts-0.7.6.orig/tools/Makefile.am gts-0.7.6-hacks/tools/Makefile.am
+--- gts-0.7.6.orig/tools/Makefile.am	2005-01-19 05:47:06.000000000 +0100
++++ gts-0.7.6-hacks/tools/Makefile.am	2008-07-30 07:46:25.000000000 +0200
+@@ -1,11 +1,17 @@
+ ## Process this file with automake to produce Makefile.in
+ 
+-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(includedir)\
++AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src\
+ 	 -DG_LOG_DOMAIN=\"Gts-tools\"
+-LDADD = $(top_builddir)/src/libgts.la -lm
+-DEPS = $(top_builddir)/src/libgts.la
++LDADD = $(top_builddir)/src/libgts.la
+ 
+ bin_PROGRAMS = gts2oogl gtscompare gtscheck stl2gts gts2dxf gts2stl
+ bin_SCRIPTS = gtstemplate
+ 
+ EXTRA_DIST = gtstemplate
++
++gts2dxf_SOURCES = gts2dxf.c
++gts2oogl_SOURCES = gts2oogl.c
++gts2stl_SOURCES = gts2stl.c
++gtscheck_SOURCES = gtscheck.c
++gtscompare_SOURCES = gtscompare.c
++stl2gts_SOURCES = stl2gts.c

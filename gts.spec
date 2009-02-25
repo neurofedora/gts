@@ -1,6 +1,6 @@
 Name:           gts
 Version:        0.7.6
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
 License:        LGPLv2+
@@ -87,6 +87,9 @@ make check ||:
 %{_datadir}/aclocal/*
 
 %changelog
+* Tue Feb 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.7.6-12
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
+
 * Wed Jul 30 2008 Ralf Corsépius <rc040203@freenet.de> - 0.7.6-11
 - Let *-devel Require: glib2-devel (BZ: 457099).
 - Pass LIBS=-lm to %%configure (avoid non-weak refs to libm).

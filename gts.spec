@@ -1,6 +1,6 @@
 Name:           gts
 Version:        0.7.6
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
 License:        LGPLv2+
@@ -10,6 +10,8 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Patch0:         gts-0.7.6-hacks.diff
 
 Patch10:	gts-0.7.6-autotools.diff.bz2
+# https://bugzilla.redhat.com/show_bug.cgi?id=538971
+Patch11:	gts-0.7.6-netpbm.patch
 
 BuildRequires:  glib2-devel
 BuildRequires:  netpbm-devel
@@ -35,6 +37,7 @@ This package contains the gts header files and libs.
 %patch0 -p1
 
 %patch10 -p1
+%patch11 -p1 -b .netpbm
 
 # Fix broken permissions
 chmod +x test/*/*.sh
@@ -87,6 +90,9 @@ make check ||:
 %{_datadir}/aclocal/*
 
 %changelog
+* Tue Jun  1 2010 Dan Horák <dan[at]danny.cz> - 0.7.6-14
+- fix include path for pgm.h (#538971)
+
 * Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.7.6-13
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 

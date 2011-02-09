@@ -1,6 +1,6 @@
 Name:           gts
 Version:        0.7.6
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
 License:        LGPLv2+
@@ -90,6 +90,9 @@ make check ||:
 %{_datadir}/aclocal/*
 
 %changelog
+* Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.7.6-15
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Tue Jun  1 2010 Dan Horák <dan[at]danny.cz> - 0.7.6-14
 - fix include path for pgm.h (#538971)
 

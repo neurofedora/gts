@@ -1,6 +1,6 @@
 Name:           gts
 Version:        0.7.6
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
 License:        LGPLv2+
@@ -90,6 +90,9 @@ make check ||:
 %{_datadir}/aclocal/*
 
 %changelog
+* Wed Nov 16 2011 Jindrich Novy <jnovy@redhat.com> - 0.7.6-16
+- rebuild against new netpbm
+
 * Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.7.6-15
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 

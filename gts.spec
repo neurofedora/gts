@@ -1,17 +1,15 @@
+%global snapshot 111025
+
 Name:           gts
 Version:        0.7.6
-Release:        16%{?dist}
+Release:        19.20%{snapshot}%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
 License:        LGPLv2+
 URL:            http://gts.sourceforge.net/index.html
-Source0:        http://prdownloads.sourceforge.net/gts/gts-0.7.6.tar.gz
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Patch0:         gts-0.7.6-hacks.diff
-
-Patch10:	gts-0.7.6-autotools.diff.bz2
-# https://bugzilla.redhat.com/show_bug.cgi?id=538971
-Patch11:	gts-0.7.6-netpbm.patch
+Source0:        http://gts.sourceforge.net/tarballs/gts-snapshot-%{snapshot}.tar.gz
+# Misc accumulated patches
+Patch0:         gts-snapshot-111025.patch
 
 BuildRequires:  glib2-devel
 BuildRequires:  netpbm-devel
@@ -33,29 +31,27 @@ set operations (union, intersection, differences).
 This package contains the gts header files and libs.
 
 %prep
-%setup -q
+%setup -q -n %{name}-snapshot-%{snapshot}
 %patch0 -p1
-
-%patch10 -p1
-%patch11 -p1 -b .netpbm
 
 # Fix broken permissions
 chmod +x test/*/*.sh
 
 %build
-%configure --disable-static --disable-dependency-tracking LIBS=-lm
+%configure --disable-static --disable-dependency-tracking
 make %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
+
+# File names are too general, rename ...
 mv -f $RPM_BUILD_ROOT%{_bindir}/delaunay $RPM_BUILD_ROOT%{_bindir}/gtsdelaunay 
 mv -f $RPM_BUILD_ROOT%{_bindir}/happrox $RPM_BUILD_ROOT%{_bindir}/gtshapprox
 mv -f $RPM_BUILD_ROOT%{_bindir}/transform $RPM_BUILD_ROOT%{_bindir}/gtstransform
-
-%clean
-rm -rf $RPM_BUILD_ROOT
+mv -f $RPM_BUILD_ROOT%{_mandir}/man1/delaunay.1 $RPM_BUILD_ROOT%{_mandir}/man1/gtsdelaunay.1 
+mv -f $RPM_BUILD_ROOT%{_mandir}/man1/happrox.1 $RPM_BUILD_ROOT%{_mandir}/man1/gtshapprox.1
+mv -f $RPM_BUILD_ROOT%{_mandir}/man1/transform.1 $RPM_BUILD_ROOT%{_mandir}/man1/gtstransform.1
 
 %check
 # Urgh, something is very broken with gts rsp. its testsuite
@@ -79,17 +75,32 @@ make check ||:
 %{_bindir}/stl2gts
 %{_bindir}/gtstransform
 %{_libdir}/*.so.*
+%{_mandir}/man1/gtsdelaunay.1*
+%{_mandir}/man1/gts2dxf.1*
+%{_mandir}/man1/gts2oogl.1*
+%{_mandir}/man1/gts2stl.1*
+%{_mandir}/man1/gtscheck.1*
+%{_mandir}/man1/gtscompare.1*
+%{_mandir}/man1/gtstemplate.1*
+%{_mandir}/man1/gtshapprox.1*
+%{_mandir}/man1/stl2gts.1*
+%{_mandir}/man1/gtstransform.1*
 
 %files devel
 %defattr(-,root,root,-)
-%doc doc/html
 %{_bindir}/gts-config
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 %{_libdir}/*.so
 %{_datadir}/aclocal/*
+%{_mandir}/man1/gts-config.1*
 
 %changelog
+* Wed Dec 07 2011 Ralf Corsépius <corsepiu@fedoraproject.org> - 0.7.6-19.20111025
+- Update to new upstream snapshot
+- Rebase patches.
+- Spec file cleanup.
+
 * Wed Nov 16 2011 Jindrich Novy <jnovy@redhat.com> - 0.7.6-16
 - rebuild against new netpbm
 

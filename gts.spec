@@ -2,7 +2,7 @@
 
 Name:           gts
 Version:        0.7.6
-Release:        21.20%{snapshot}%{?dist}
+Release:        22.20%{snapshot}%{?dist}
 Summary:        GNU Triangulated Surface Library
 Group:          Applications/Engineering
 License:        LGPLv2+
@@ -96,6 +96,9 @@ make check ||:
 %{_mandir}/man1/gts-config.1*
 
 %changelog
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.7.6-22.20111025
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
 * Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.7.6-21.20111025
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 

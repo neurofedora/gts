@@ -1,4 +1,4 @@
-%global snapshot 111025
+%global snapshot 121130
 
 Name:           gts
 Version:        0.7.6
@@ -8,18 +8,18 @@ Group:          Applications/Engineering
 License:        LGPLv2+
 URL:            http://gts.sourceforge.net/index.html
 Source0:        http://gts.sourceforge.net/tarballs/gts-snapshot-%{snapshot}.tar.gz
-# Misc accumulated patches
-Patch0:         gts-snapshot-111025.patch
-
-BuildRequires:  glib2-devel
+Patch0:         0001-examples-rename-with-gts-prefix-and-install-set-and-.patch
+BuildRequires:  git-core
+BuildRequires:  autoconf
+BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  netpbm-devel
 
 %package devel
 Summary:        Development files for gts
 Group:          Applications/Engineering
 Requires:       pkgconfig
-Requires:       glib2-devel
-Requires:       %{name} = %{version}-%{release}
+Requires:       glib2-devel%{_isa}
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description
 GTS provides a set of useful functions to deal with 3D surfaces meshed
@@ -31,27 +31,19 @@ set operations (union, intersection, differences).
 This package contains the gts header files and libs.
 
 %prep
-%setup -q -n %{name}-snapshot-%{snapshot}
-%patch0 -p1
+%autosetup -n %{name}-snapshot-%{snapshot} -S git
 
 # Fix broken permissions
 chmod +x test/*/*.sh
 
 %build
+autoreconf -vfi
 %configure --disable-static --disable-dependency-tracking
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT
-rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
-
-# File names are too general, rename ...
-mv -f $RPM_BUILD_ROOT%{_bindir}/delaunay $RPM_BUILD_ROOT%{_bindir}/gtsdelaunay 
-mv -f $RPM_BUILD_ROOT%{_bindir}/happrox $RPM_BUILD_ROOT%{_bindir}/gtshapprox
-mv -f $RPM_BUILD_ROOT%{_bindir}/transform $RPM_BUILD_ROOT%{_bindir}/gtstransform
-mv -f $RPM_BUILD_ROOT%{_mandir}/man1/delaunay.1 $RPM_BUILD_ROOT%{_mandir}/man1/gtsdelaunay.1 
-mv -f $RPM_BUILD_ROOT%{_mandir}/man1/happrox.1 $RPM_BUILD_ROOT%{_mandir}/man1/gtshapprox.1
-mv -f $RPM_BUILD_ROOT%{_mandir}/man1/transform.1 $RPM_BUILD_ROOT%{_mandir}/man1/gtstransform.1
+%make_install
+rm -f %{buildroot}%{_libdir}/*.la
 
 %check
 # Urgh, something is very broken with gts rsp. its testsuite
@@ -62,8 +54,8 @@ make check ||:
 %postun -p /sbin/ldconfig
 
 %files
-%defattr(-,root,root,-)
-%doc COPYING
+%license COPYING
+%doc README AUTHORS THANKS
 %{_bindir}/gtsdelaunay
 %{_bindir}/gts2dxf
 %{_bindir}/gts2oogl
@@ -74,7 +66,8 @@ make check ||:
 %{_bindir}/gtshapprox
 %{_bindir}/stl2gts
 %{_bindir}/gtstransform
-%{_libdir}/*.so.*
+%{_bindir}/gts2xyz
+%{_libdir}/lib%{name}*.so.*
 %{_mandir}/man1/gtsdelaunay.1*
 %{_mandir}/man1/gts2dxf.1*
 %{_mandir}/man1/gts2oogl.1*
@@ -85,17 +78,25 @@ make check ||:
 %{_mandir}/man1/gtshapprox.1*
 %{_mandir}/man1/stl2gts.1*
 %{_mandir}/man1/gtstransform.1*
+# was noinst
+%{_bindir}/gtsset
+%{_bindir}/gtsrefine
 
 %files devel
-%defattr(-,root,root,-)
+%doc examples/*.c
 %{_bindir}/gts-config
-%{_includedir}/*
-%{_libdir}/pkgconfig/*
-%{_libdir}/*.so
-%{_datadir}/aclocal/*
+%{_includedir}/%{name}*.h
+%{_libdir}/pkgconfig/%{name}.pc
+%{_libdir}/lib%{name}*.so
+%{_datadir}/aclocal/%{name}.m4
 %{_mandir}/man1/gts-config.1*
 
 %changelog
+* Thu Nov 05 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 0.7.6-26.20121130
+- Update to latest snapshot
+- Small cleanups in spec
+- Include some new examples
+
 * Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.7.6-26.20111025
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 

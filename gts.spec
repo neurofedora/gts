@@ -10,7 +10,7 @@ URL:            http://gts.sourceforge.net/index.html
 Source0:        http://gts.sourceforge.net/tarballs/gts-snapshot-%{snapshot}.tar.gz
 Patch0:         0001-examples-rename-with-gts-prefix-and-install-set-and-.patch
 BuildRequires:  git-core
-BuildRequires:  autoconf
+BuildRequires:  autoconf automake libtool
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  netpbm-devel
 
